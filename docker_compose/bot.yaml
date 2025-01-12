@@ -1,0 +1,17 @@
+services:
+  spam-bot:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: spam-bot
+    command: "python3 bot_main.py"
+    env_file:
+      - .env
+    volumes:
+      - app/:/app/
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
