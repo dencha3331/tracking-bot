@@ -28,6 +28,8 @@ class DatabaseConfig(BaseModel):
 
 class TelegramConfig(BaseModel):
     token: str
+    payment_token: str
+    chanel_id: int
 
 
 class RedisConfig(BaseModel):
