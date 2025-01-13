@@ -1,7 +1,7 @@
 services:
 
   pg:
-    image: postgresql
+    image: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
