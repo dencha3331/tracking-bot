@@ -20,7 +20,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(nullable=True, unique=True)
     firstname: Mapped[str] = mapped_column(nullable=True)
     lastname: Mapped[str] = mapped_column(nullable=True)
-    surname: Mapped[Optional[str]] = mapped_column(nullable=True)
+    is_chanel_user: Mapped[bool] = mapped_column(default=False, nullable=True)
     first_contact_date: Mapped[datetime.date] = mapped_column(
         default=datetime.datetime.now(),
         server_default=func.now(),
