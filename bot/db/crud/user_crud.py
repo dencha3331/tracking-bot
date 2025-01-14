@@ -20,6 +20,13 @@ async def get_user(
         return result.one_or_none()
 
 
+async def get_chanel_users(db_session: "AsyncSession") -> list["User"]:
+    stmt = select(User).where(User.is_chanel_user.is_(True))
+    async with db_session as session:
+        result = await session.scalars(stmt)
+        return list(result.all())
+
+
 async def create_new_user(
     telegram_user: "UserTG",
     db_session: "AsyncSession",
