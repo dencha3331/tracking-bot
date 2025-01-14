@@ -1,4 +1,3 @@
-import datetime
 import hashlib
 import time
 from typing import TYPE_CHECKING, Union
@@ -12,14 +11,9 @@ from states import PaymentStateGroup
 from configs import settings
 from db.models import Transaction
 
-# from db import crud
 
 if TYPE_CHECKING:
-    from aiogram import Bot
-    from redis.asyncio.client import Redis
-    from aiogram.fsm.storage.redis import RedisStorage
     from aiogram_dialog.widgets.kbd import Button
-    from aiogram_dialog.widgets.common import Whenable
     from sqlalchemy.ext.asyncio import AsyncSession
     from aiogram_dialog import (
         DialogManager,
@@ -91,10 +85,8 @@ async def send_invoice(
         description="Описание счета",
         payload=payload,
         provider_token=settings.telegram.payment_token,
-        # is_flexible=False,
         currency="rub",
         prices=prices,
-        # start_parameter="test-payment",
     )
 
 

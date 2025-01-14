@@ -34,18 +34,9 @@ class GetUserAndDBSessionMiddleware(BaseMiddleware):
             isinstance(event, CallbackQuery)
             and event.message.chat.type != ChatType.PRIVATE
         ):
-            print(event.message.chat.id)
             return
         if isinstance(event, Message) and event.chat.type != ChatType.PRIVATE:
-            print(event.chat.id)
             return
-        # if isinstance(event, ChatMemberUpdated):
-        #     if event.new_chat_member.status not in {
-        #         "member",
-        #         "administrator",
-        #     } and event.old_chat_member.status not in {"left", "kicked"}:
-        #         return  # Пропускаем, если не "new_chat_members" или "left_chat_member"
-
         db_session: "AsyncSession" = await db_helper.session_getter()
         tg_user: "TGUser" = data["event_from_user"]
         db_user: "User | None" = await crud.get_user(

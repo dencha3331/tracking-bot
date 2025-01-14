@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING
-
 import datetime
-from typing import Optional
 
 from sqlalchemy import BigInteger, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship

@@ -1,17 +1,13 @@
-from aiogram_dialog import Dialog, Window
+from aiogram_dialog import Dialog, Window, ShowMode
 from aiogram_dialog.widgets.kbd import (
-    Start,
-    SwitchTo,
     Button,
     Back,
     Cancel,
 )
-from aiogram_dialog.widgets.text import Format, Const
-from magic_filter import F
+from aiogram_dialog.widgets.text import Const
 
 from dialogs.getters_clickers import payment_getters_clickers as getters_clickers
 from states import (
-    MainStateGroup,
     PaymentStateGroup,
 )
 
@@ -34,7 +30,10 @@ payment_dialog = Dialog(
             id="go_to_6_month_subscribe",
             on_click=getters_clickers.click_subscribe,
         ),
-        Cancel(Const("🔙 Назад ⬅️")),
+        Cancel(
+            Const("🔙 Назад ⬅️"),
+            show_mode=ShowMode.DELETE_AND_SEND,
+        ),
         state=PaymentStateGroup.choice_subscribe_length,
     ),
     Window(
@@ -42,6 +41,7 @@ payment_dialog = Dialog(
         Back(
             Const("🔙 Назад ⬅️"),
             on_click=getters_clickers.cancel_button,
+            show_mode=ShowMode.DELETE_AND_SEND,
         ),
         state=PaymentStateGroup.paying,
     ),
