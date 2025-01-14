@@ -1,6 +1,6 @@
 services:
 
-  pg:
+  pg_tracking_bot:
     image: postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
