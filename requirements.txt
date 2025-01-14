@@ -26,11 +26,16 @@ packaging==24.2
 pathspec==0.12.1
 platformdirs==4.3.6
 propcache==0.2.1
+pyaes==1.6.1
 pydantic==2.10.5
 pydantic-settings==2.7.1
 pydantic_core==2.27.2
+pymediainfo-pyrofork==6.0.2
+pyrofork==2.3.56
+PySocks==1.7.1
 python-dotenv==1.0.1
 redis==5.2.1
 SQLAlchemy==2.0.37
+TgCrypto==1.2.5
 typing_extensions==4.12.2
 yarl==1.18.3
