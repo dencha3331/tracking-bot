@@ -1,9 +1,6 @@
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import (
     Start,
-    SwitchTo,
-    Button,
-    Back,
     Url,
 )
 from aiogram_dialog.widgets.text import Format, Const
@@ -28,11 +25,13 @@ main_dialog = Dialog(
             when=F["is_subscribe_user"],
         ),
         Format(
-            "Ваша подписка закончилась {end_subscribe_user} ❌",
+            "Ваша подписка закончилась {end_subscribe} ❌",
             when=F["end_subscribe_user"],
         ),
         Format(
-            "Здесь какой-то рекламный текст можно❗️❗️❗️",
+            "🌟 Добро пожаловать в Пространство Развития!\n\nЗдесь вы получите доступ к закрытому "
+            "каналу с уникальными материалами по саморазвитию и духовному росту.\n\n"
+            "Выберите действие в меню ниже 👇",
             when=F["not_subscribe_user"],
         ),
         Url(
@@ -43,18 +42,21 @@ main_dialog = Dialog(
         Start(
             Const("💲🔂 Продлить подписку 🔂💲"),
             id="renew_subscribe",
+            on_click=getters_clicks.cancel_button,
             state=PaymentStateGroup.choice_subscribe_length,
             when=F["is_subscribe_user"],
         ),
         Start(
             Const("💲 Оформить подписку 💲"),
             id="new_subscribe1",
+            on_click=getters_clicks.cancel_button,
             state=PaymentStateGroup.choice_subscribe_length,
             when=F["not_subscribe_user"],
         ),
         Start(
             Const("💲 Оформить подписку 💲"),
             id="new_subscribe2",
+            on_click=getters_clicks.cancel_button,
             state=PaymentStateGroup.choice_subscribe_length,
             when=F["end_subscribe_user"],
         ),

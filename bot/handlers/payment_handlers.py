@@ -8,24 +8,30 @@ from aiogram_dialog import ShowMode, StartMode
 from configs import settings
 from db import crud
 from db.models import Transaction
-from states import PaymentStateGroup, MainStateGroup
+from states import MainStateGroup
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from aiogram_dialog import DialogManager
     from aiogram.types import Message, PreCheckoutQuery
+    from aiogram.fsm.storage.redis import RedisStorage
+    from redis import Redis
+
     from db.models import User
 
 payments_router: Router = Router()
 
 
 @payments_router.pre_checkout_query(lambda query: True)
-async def checkout(pre_checkout_query: "PreCheckoutQuery") -> None:
+async def checkout(
+    pre_checkout_query: "PreCheckoutQuery", db_session: "AsyncSession"
+) -> None:
     """Проверка есть ли такая транзакция в бд"""
-    # transaction: Transaction = await BotCrud.get_current_transaction(
-    #     pre_checkout_query.from_user.id, pre_checkout_query.invoice_payload
-    # )
-    transaction = True
+    transaction: Transaction = await crud.get_current_transaction(
+        user_tg_id=pre_checkout_query.from_user.id,
+        invoice_payload=pre_checkout_query.invoice_payload,
+        db_session=db_session,
+    )
     if transaction:
         await pre_checkout_query.answer(ok=True)
     else:
@@ -48,7 +54,6 @@ async def got_payment(message: "Message", dialog_manager: "DialogManager") -> No
             )
         except TelegramBadRequest:
             pass
-    # await message.delete()
 
     transaction: "Transaction" = await crud.get_current_transaction(
         user_tg_id=message.from_user.id,
@@ -68,20 +73,17 @@ async def got_payment(message: "Message", dialog_manager: "DialogManager") -> No
         )
     elif db_user.end_subscribe > datetime.datetime.now():
         db_user.end_subscribe += datetime.timedelta(days=transaction.days)
-
+    db_user.is_chanel_user = True
     await crud.add_object_to_db_session(
         transaction,
         db_user,
         db_session=db_session,
     )
-    # await delete_previous_message(dialog_manager)
-    # dialog_manager.dialog_data["is_success_payment_message"] = True
     invite_link = await message.bot.create_chat_invite_link(
-        settings.telegram.chanel_id, member_limit=1
+        settings.telegram.chanel_id,
+        member_limit=1,
+        expire_date=datetime.timedelta(days=transaction.days),
     )
-    # await dialog_manager.done(
-    #     show_mode=ShowMode.DELETE_AND_SEND, result={"invite_link": invite_link}
-    # )
     await dialog_manager.start(
         state=MainStateGroup.main_dialog,
         mode=StartMode.RESET_STACK,
@@ -90,4 +92,10 @@ async def got_payment(message: "Message", dialog_manager: "DialogManager") -> No
             "is_success_payment_message": True,
             "invite_link": invite_link.invite_link,
         },
+    )
+    redis_storage: "RedisStorage" = dialog_manager.middleware_data.get("fsm_storage")
+    redis: "Redis" = redis_storage.redis
+    await redis.set(
+        name=f"{db_user.user_telegramid}_ending_subscribe_messages_count",
+        value=0,
     )
