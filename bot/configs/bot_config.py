@@ -32,6 +32,12 @@ class TelegramConfig(BaseModel):
     chanel_id: int
 
 
+class PyroforkConfig(BaseModel):
+    app_id: int
+    app_hash: str
+    sessions_workdir: str
+
+
 class RedisConfig(BaseModel):
     host: str
     port: int
@@ -47,6 +53,7 @@ class Settings(BaseSettings):
     )
     db: DatabaseConfig
     telegram: TelegramConfig
+    pyrofork: PyroforkConfig
     redis: RedisConfig
 
 
