@@ -24,7 +24,6 @@ async def check_subscribe(bot: "Bot", redis: "Redis"):
     db_session: "AsyncSession" = await db_helper.session_getter()
     chanel_users: list["User"] = await crud.get_chanel_users(db_session=db_session)
     for db_user in chanel_users:
-        logger.info(f"{db_user.firstname}")
         if db_user.end_subscribe and db_user.end_subscribe < datetime.datetime.now():
             try:
                 await kick_user(
@@ -32,6 +31,7 @@ async def check_subscribe(bot: "Bot", redis: "Redis"):
                     chat_id=settings.telegram.chanel_id,
                     app=bot,
                 )
+                logger.info(f"{db_user.firstname} BAN")
             except Exception as e:
                 logger.exception(e)
         information_message = await _get_inform_message(user=db_user, redis=redis)
@@ -58,6 +58,7 @@ async def _get_inform_message(user: "User", redis: "Redis") -> str:
             ending_subscribe_messages_count is not None
             and ending_subscribe_messages_count <= 3
         ):
+            logger.info(f"{user.firstname} end subscribe")
             await _set_messages_count_value(redis, user, 4)
             return "К сожалению Ваша подписка закончилась. Надеемся Вы к нам вернетесь."
     elif (
@@ -68,6 +69,7 @@ async def _get_inform_message(user: "User", redis: "Redis") -> str:
             ending_subscribe_messages_count is not None
             and ending_subscribe_messages_count <= 2
         ):
+            logger.info(f"{user.firstname} 3 hour before subscribe")
             await _set_messages_count_value(redis, user, 3)
             return (
                 "Ваша подписка закончится через 3 часа. "
@@ -81,6 +83,7 @@ async def _get_inform_message(user: "User", redis: "Redis") -> str:
             ending_subscribe_messages_count is not None
             and ending_subscribe_messages_count <= 1
         ):
+            logger.info(f"{user.firstname} 1 day before subscribe")
             await _set_messages_count_value(redis, user, 2)
             return (
                 "Ваша подписка завтра заканчивается. "
@@ -91,6 +94,7 @@ async def _get_inform_message(user: "User", redis: "Redis") -> str:
         and user.end_subscribe < datetime.datetime.now() + datetime.timedelta(days=3)
     ):
         if not ending_subscribe_messages_count:
+            logger.info(f"{user.firstname} 3 day before subscribe")
             await _set_messages_count_value(redis, user, 1)
             return (
                 "Ваша подписка заканчивается через 3 дня. "

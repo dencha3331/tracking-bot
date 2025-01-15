@@ -32,7 +32,6 @@ async def check_users():
                 enums.ChatMemberStatus.OWNER,
                 enums.ChatMemberStatus.ADMINISTRATOR,
             ):
-                logger.info(f"ADMIN {member.user.id} {member.user.first_name}")
                 continue
 
             user: "User" = await crud.get_user(
@@ -52,4 +51,3 @@ async def check_users():
                     logger.info(f"BAN {member.user.id}, {member.user.first_name}")
                 except Exception as e:
                     logger.exception(e)
-            logger.info(f"MEMBER {member.user.id}, {member.user.first_name}")
