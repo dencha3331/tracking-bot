@@ -8,6 +8,7 @@ from aiogram.fsm.storage.redis import RedisStorage
 
 from bot_logger import logger
 from configs import settings
+from keyboards.menu import set_main_menu
 from middlewares.get_user_and_db_session import GetUserAndDBSessionMiddleware
 from handlers import (
     command_router,
@@ -45,9 +46,11 @@ async def main():
 
     setup_dialogs(dp)
 
-    logger.info("bot started")
     d = asyncio.create_task(check_subscribe_by_chat_users())
     a = asyncio.create_task(check_subscribe_by_db_users(bot=bot, redis=redis))
+
+    await set_main_menu(bot)
+    logger.info("bot started")
     await dp.start_polling(bot)
 
 
