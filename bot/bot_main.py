@@ -27,6 +27,7 @@ from src.scheduler.parallel_tasks import (
 logger = get_logger()
 
 
+@logger.catch(level="INFO")
 async def main():
     redis: Redis = Redis(host=settings.redis.host, port=settings.redis.port, db=5)
     storage: RedisStorage = RedisStorage(
