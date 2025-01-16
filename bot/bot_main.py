@@ -6,7 +6,7 @@ from aiogram_dialog import setup_dialogs
 from redis.asyncio.client import Redis
 from aiogram.fsm.storage.redis import RedisStorage
 
-from bot_logger import get_logger
+from bot_logger import logger
 from configs import settings
 from middlewares.get_user_and_db_session import GetUserAndDBSessionMiddleware
 from handlers import (
@@ -22,9 +22,6 @@ from src.scheduler.parallel_tasks import (
     check_subscribe_by_chat_users,
     check_subscribe_by_db_users,
 )
-
-
-logger = get_logger()
 
 
 @logger.catch(level="INFO")

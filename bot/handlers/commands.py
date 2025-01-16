@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 from states import (
     MainStateGroup,
 )
-from utils.messages_utils import delete_previous_message, delete_send_inform_message
+from utils.messages_utils import delete_previous_message
 
 command_router = Router(name="Command router")
 
@@ -29,8 +29,6 @@ async def start(
     state: "FSMContext",
     db_user: "User",
 ) -> None:
-
-    redis_storage: "RedisStorage" = dialog_manager.middleware_data.get("fsm_storage")
 
     await clear_chat(message=message, dialog_manager=dialog_manager)
     await state.clear()

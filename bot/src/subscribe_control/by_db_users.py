@@ -8,15 +8,13 @@ from aiogram_dialog.manager.bg_manager import BgManager
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot_logger import get_logger
+from bot_logger import logger
 from configs import settings
 from db import db_helper, crud
 from db.models import User
 from dialogs import main_dialog
 from states import MainStateGroup
 from utils.kick_user_from_chat import kick_user
-
-logger = get_logger()
 
 
 async def check_subscribe(bot: "Bot", redis: "Redis"):
@@ -25,15 +23,12 @@ async def check_subscribe(bot: "Bot", redis: "Redis"):
     chanel_users: list["User"] = await crud.get_chanel_users(db_session=db_session)
     for db_user in chanel_users:
         if db_user.end_subscribe and db_user.end_subscribe < datetime.datetime.now():
-            try:
-                await kick_user(
-                    tg_userid=db_user.user_telegramid,
-                    chat_id=settings.telegram.chanel_id,
-                    app=bot,
-                )
-                logger.info(f"{db_user.firstname} BAN")
-            except Exception as e:
-                logger.exception(e)
+            await kick_user(
+                tg_userid=db_user.user_telegramid,
+                chat_id=settings.telegram.chanel_id,
+                app=bot,
+            )
+
         information_message = await _get_inform_message(user=db_user, redis=redis)
         if not information_message:
             continue

@@ -1,5 +1,5 @@
 import datetime
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 from utils.messages_utils import delete_send_inform_message
 
@@ -15,38 +15,20 @@ if TYPE_CHECKING:
 
 async def main_menu_getter(dialog_manager: "DialogManager", **kwargs) -> dict:
     db_user: "User" = dialog_manager.middleware_data.get("db_user")
-    redis_storage: "RedisStorage" = dialog_manager.middleware_data.get("fsm_storage")
-    redis: "Redis" = redis_storage.redis
-    bot: "Bot" = dialog_manager.middleware_data.get("bot")
-    await delete_send_inform_message(
-        telegram_userid=db_user.user_telegramid,
-        redis=redis,
-        bot=bot,
-    )
-    not_subscribe_user = db_user.end_subscribe is None
-    information_message = ""
-    is_subscribe_user = (
-        db_user.end_subscribe > datetime.datetime.now()
-        if db_user.end_subscribe
-        else None
-    )
-    end_subscribe_user = (
-        db_user.end_subscribe < datetime.datetime.now()
-        if db_user.end_subscribe
-        else None
-    )
-    if dialog_manager.start_data and dialog_manager.start_data.get("invite_link"):
-        information_message += f"Вы успешно оформили подписку ✅\n"
-    if dialog_manager.start_data and dialog_manager.start_data.get(
-        "information_message"
-    ):
-        information_message += dialog_manager.start_data.get("information_message")
-
+    await _send_information_message(dialog_manager=dialog_manager)
     return {
-        "information_message": information_message,
-        "is_subscribe_user": is_subscribe_user,
-        "end_subscribe_user": end_subscribe_user,
-        "not_subscribe_user": not_subscribe_user,
+        "information_message": await _get_information_message(dialog_manager),
+        "is_subscribe_user": (
+            db_user.end_subscribe > datetime.datetime.now()
+            if db_user.end_subscribe
+            else None
+        ),
+        "end_subscribe_user": (
+            db_user.end_subscribe < datetime.datetime.now()
+            if db_user.end_subscribe
+            else None
+        ),
+        "not_subscribe_user": db_user.end_subscribe is None,
         "invite_link": (
             dialog_manager.start_data.get("invite_link")
             if dialog_manager.start_data
@@ -58,6 +40,30 @@ async def main_menu_getter(dialog_manager: "DialogManager", **kwargs) -> dict:
             else None
         ),
     }
+
+
+async def _send_information_message(dialog_manager: "DialogManager"):
+    db_user: "User" = dialog_manager.middleware_data.get("db_user")
+    redis_storage: "RedisStorage" = dialog_manager.middleware_data.get("fsm_storage")
+    redis: "Redis" = redis_storage.redis
+    bot: "Bot" = dialog_manager.middleware_data.get("bot")
+    await delete_send_inform_message(
+        telegram_userid=db_user.user_telegramid,
+        redis=redis,
+        bot=bot,
+    )
+
+
+async def _get_information_message(dialog_manager: "DialogManager") -> str:
+    information_message = ""
+    if dialog_manager.start_data and dialog_manager.start_data.get("invite_link"):
+        information_message += f"Вы успешно оформили подписку ✅\n"
+    if dialog_manager.start_data and dialog_manager.start_data.get(
+        "information_message"
+    ):
+        information_message += dialog_manager.start_data.get("information_message")
+
+    return information_message
 
 
 async def cancel_button(

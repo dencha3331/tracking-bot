@@ -37,16 +37,16 @@ async def click_subscribe(
     db_session: "AsyncSession" = dialog_manager.middleware_data.get("db_session")
 
     if button.widget_id == "go_to_1_month_subscribe":
-        amount = 99000
+        amount = settings.price.month
         label = "990 руб на 1 мес"
         days = 30
     elif button.widget_id == "go_to_3_month_subscribe":
-        amount = 249000
+        amount = settings.price.three_month
         label = "2490 руб на 3 мес"
         days = 90
     # elif button.widget_id == "go_to_6_month_subscribe":
     else:
-        amount = 499000
+        amount = settings.price.six_month
         label = "4990 руб на 6 мес"
         days = 180
 

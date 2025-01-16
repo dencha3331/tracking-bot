@@ -4,7 +4,7 @@ import datetime
 
 from pyrogram import Client, enums
 
-from bot_logger import get_logger
+from bot_logger import logger
 from configs import settings
 from db import db_helper, crud
 from utils.kick_user_from_chat import kick_user
@@ -13,19 +13,19 @@ if TYPE_CHECKING:
     from db.models import User
     from sqlalchemy.ext.asyncio import AsyncSession
 
-logger = get_logger()
-
 
 async def check_users():
     async with Client(
-        f"{settings.pyrofork.sessions_workdir}tracking_bot",
+        f"{settings.pyrofork.sessions_workdir}/{settings.pyrofork.sessions_name}",
         api_id=settings.pyrofork.app_id,
         api_hash=settings.pyrofork.app_hash,
         bot_token=settings.telegram.token,
     ) as app:
+
         async for member in app.get_chat_members(
             settings.telegram.chanel_id
         ):  # type: "ChatMember"
+
             db_session: "AsyncSession" = await db_helper.session_getter()
             await asyncio.sleep(1)
             if member.status in (

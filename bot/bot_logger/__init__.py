@@ -1,3 +1,5 @@
-__all__ = ("get_logger",)
+__all__ = ("logger",)
 
 from .logger_config import get_logger
+
+logger = get_logger()

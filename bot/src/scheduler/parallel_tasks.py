@@ -4,16 +4,13 @@ import gc
 
 from pyrogram.errors import FloodWait
 
-from bot_logger import get_logger
+from bot_logger import logger
 from src.subscribe_control.by_chat_users import check_users
 from src.subscribe_control.by_db_users import check_subscribe
 
 if TYPE_CHECKING:
     from aiogram import Bot
     from redis.asyncio import Redis
-
-
-logger = get_logger()
 
 
 async def check_subscribe_by_chat_users():

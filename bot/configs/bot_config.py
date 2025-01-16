@@ -36,11 +36,18 @@ class PyroforkConfig(BaseModel):
     app_id: int
     app_hash: str
     sessions_workdir: str
+    sessions_name: str
 
 
 class RedisConfig(BaseModel):
     host: str
     port: int
+
+
+class PricesConfig(BaseModel):
+    month: int
+    three_month: int
+    six_month: int
 
 
 class Settings(BaseSettings):
@@ -55,6 +62,7 @@ class Settings(BaseSettings):
     telegram: TelegramConfig
     pyrofork: PyroforkConfig
     redis: RedisConfig
+    price: PricesConfig
 
 
 settings = Settings()

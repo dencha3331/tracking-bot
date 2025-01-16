@@ -5,6 +5,7 @@ from aiogram import Router, F
 from aiogram.exceptions import TelegramBadRequest
 from aiogram_dialog import ShowMode, StartMode
 
+from bot_logger import logger
 from configs import settings
 from db import crud
 from db.models import Transaction
@@ -44,8 +45,42 @@ async def checkout(
 @payments_router.message(F.content_type.in_(["successful_payment"]))
 async def got_payment(message: "Message", dialog_manager: "DialogManager") -> None:
     """Подтвержденная оплата(сообщение об успешной оплате от телеграмм)"""
-    db_user: "User" = dialog_manager.middleware_data.get("db_user")
-    db_session: "AsyncSession" = dialog_manager.middleware_data.get("db_session")
+
+    transaction: "Transaction" = await save_payment(message, dialog_manager)
+
+    await unban_user(message=message)
+
+    await delete_invoice_message(dialog_manager, message)
+
+    invite_link = await get_invite_link(message=message, expire_days=transaction.days)
+
+    await dialog_manager.start(
+        state=MainStateGroup.main_dialog,
+        mode=StartMode.RESET_STACK,
+        show_mode=ShowMode.DELETE_AND_SEND,
+        data={
+            "is_success_payment_message": True,
+            "invite_link": invite_link,
+        },
+    )
+    await reset_ending_subscribe_messages_count(
+        dialog_manager=dialog_manager,
+        telegram_userid=message.from_user.id,
+    )
+
+
+async def unban_user(message: "Message") -> None:
+    try:
+        await message.bot.unban_chat_member(
+            chat_id=settings.telegram.chanel_id, user_id=message.from_user.id
+        )
+    except Exception as e:
+        logger.exception(e)
+
+
+async def delete_invoice_message(
+    dialog_manager: "DialogManager", message: "Message"
+) -> None:
     invoice_message_id: int = dialog_manager.dialog_data.get("invoice_message_id")
     if invoice_message_id:
         try:
@@ -54,6 +89,13 @@ async def got_payment(message: "Message", dialog_manager: "DialogManager") -> No
             )
         except TelegramBadRequest:
             pass
+
+
+async def save_payment(
+    message: "Message", dialog_manager: "DialogManager"
+) -> "Transaction":
+    db_user: "User" = dialog_manager.middleware_data.get("db_user")
+    db_session: "AsyncSession" = dialog_manager.middleware_data.get("db_session")
 
     transaction: "Transaction" = await crud.get_current_transaction(
         user_tg_id=message.from_user.id,
@@ -79,23 +121,24 @@ async def got_payment(message: "Message", dialog_manager: "DialogManager") -> No
         db_user,
         db_session=db_session,
     )
-    invite_link = await message.bot.create_chat_invite_link(
-        settings.telegram.chanel_id,
-        member_limit=1,
-        expire_date=datetime.timedelta(days=transaction.days),
-    )
-    await dialog_manager.start(
-        state=MainStateGroup.main_dialog,
-        mode=StartMode.RESET_STACK,
-        show_mode=ShowMode.DELETE_AND_SEND,
-        data={
-            "is_success_payment_message": True,
-            "invite_link": invite_link.invite_link,
-        },
-    )
+    return transaction
+
+
+async def reset_ending_subscribe_messages_count(
+    dialog_manager: "DialogManager", telegram_userid: int
+) -> None:
     redis_storage: "RedisStorage" = dialog_manager.middleware_data.get("fsm_storage")
     redis: "Redis" = redis_storage.redis
     await redis.set(
-        name=f"{db_user.user_telegramid}_ending_subscribe_messages_count",
+        name=f"{telegram_userid}_ending_subscribe_messages_count",
         value=0,
     )
+
+
+async def get_invite_link(message, expire_days) -> str:
+    invite_link = await message.bot.create_chat_invite_link(
+        settings.telegram.chanel_id,
+        member_limit=1,
+        expire_date=datetime.timedelta(days=expire_days),
+    )
+    return invite_link.invite_link
