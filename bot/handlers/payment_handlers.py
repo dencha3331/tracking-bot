@@ -105,6 +105,7 @@ async def save_payment(
         db_session=db_session,
     )
     transaction.success = True
+    transaction.date_transaction = datetime.datetime.now()
     if not db_user.start_subscribe or db_user.end_subscribe < datetime.datetime.now():
         db_user.start_subscribe = datetime.datetime.now()
     if not db_user.end_subscribe:
