@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 from aiogram import Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
-from aiogram.fsm.storage.redis import RedisStorage
 from aiogram_dialog import StartMode
 from aiogram_dialog.api.exceptions import NoContextError
 

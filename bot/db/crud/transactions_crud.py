@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import select, delete, and_
 
-from db import db_helper
+from db.db_helper import db_helper
 from db.models import Transaction
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ async def clear_not_pay_user_transactions(
     db_session: "AsyncSession" = None,
 ) -> None:
     if not db_session:
-        db_session = await db_helper.session_getter()
+        db_session: "AsyncSession" = await db_helper.session_getter()
     stmt = delete(Transaction).where(
         and_(
             Transaction.user_telegramid == user_tg_id,

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import select, update
 
-from db import db_helper
+from db.db_helper import db_helper
 from db.models import User
 
 if TYPE_CHECKING:
