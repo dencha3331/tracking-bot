@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy.exc import IntegrityError
 
+from db import db_helper
+
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,8 +12,11 @@ if TYPE_CHECKING:
 
 async def add_object_to_db_session(
     *objs: "Base",
-    db_session: "AsyncSession",
-):
+    db_session: "AsyncSession" = None,
+) -> None:
+    if not db_session:
+        db_session = await db_helper.session_getter()
+
     async with db_session as session:
         try:
             session.add_all(objs)
