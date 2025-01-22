@@ -1,3 +1,4 @@
+import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, BigInteger
@@ -17,6 +18,7 @@ class Transaction(Base):
     days: Mapped[int]
     payload: Mapped[str] = mapped_column(unique=True)
     success: Mapped[bool] = mapped_column(default=False)
+    date_transaction: Mapped[datetime.datetime] = mapped_column(nullable=True)
 
     user_telegramid: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("users.user_telegramid")
