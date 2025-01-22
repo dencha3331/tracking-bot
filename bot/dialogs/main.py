@@ -3,6 +3,7 @@ from aiogram_dialog.widgets.kbd import (
     Start,
     Url,
     Back,
+    SwitchTo,
 )
 from aiogram_dialog.widgets.text import Format, Const
 from magic_filter import F
@@ -60,6 +61,11 @@ main_dialog = Dialog(
             on_click=getters_clicks.cancel_button,
             state=PaymentStateGroup.choice_subscribe_length,
             when=F["end_subscribe_user"],
+        ),
+        SwitchTo(
+            Const("📃 Информация о канале 📃"),
+            id="switch_to_chanel_information",
+            state=MainStateGroup.chanel_information,
         ),
         Url(
             Const("👨‍💻 Администратор 👨‍💻"),
