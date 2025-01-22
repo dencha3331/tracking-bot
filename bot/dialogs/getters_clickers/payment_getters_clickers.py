@@ -38,16 +38,16 @@ async def click_subscribe(
 
     if button.widget_id == "go_to_1_month_subscribe":
         amount = settings.price.month
-        label = "990 руб на 1 мес"
+        label = "990 руб доступ на 1 мес к каналу «Живи мудро»"
         days = 30
     elif button.widget_id == "go_to_3_month_subscribe":
         amount = settings.price.three_month
-        label = "2490 руб на 3 мес"
+        label = "2490 руб доступ на 3 мес к каналу «Живи мудро»"
         days = 90
     # elif button.widget_id == "go_to_6_month_subscribe":
     else:
         amount = settings.price.six_month
-        label = "4990 руб на 6 мес"
+        label = "4990 руб доступ на 6 мес к каналу «Живи мудро»"
         days = 180
 
     str_hash: str = (
@@ -82,7 +82,7 @@ async def send_invoice(
     return await bot.send_invoice(
         chat_id=message.chat.id,
         title=label,
-        description="Описание счета",
+        description="Оплата подписки",
         payload=payload,
         provider_token=settings.telegram.payment_token,
         currency="rub",
