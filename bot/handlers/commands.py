@@ -7,6 +7,8 @@ from aiogram.fsm.storage.redis import RedisStorage
 from aiogram_dialog import StartMode
 from aiogram_dialog.api.exceptions import NoContextError
 
+from db import crud
+
 if TYPE_CHECKING:
     from aiogram.types import Message
     from aiogram.fsm.context import FSMContext
@@ -53,6 +55,15 @@ async def clear_chat(message: "Message", dialog_manager: "DialogManager"):
             chat_id=message.chat.id,
             message_id=dialog_manager.dialog_data["message_id"],
         )
+    except (TelegramBadRequest, NoContextError, KeyError):
+        pass
+    try:
+        await crud.clear_not_pay_user_transactions(user_tg_id=message.from_user.id)
+        if dialog_manager.dialog_data["invoice_message_id"]:
+            await message.bot.delete_message(
+                chat_id=message.chat.id,
+                message_id=dialog_manager.dialog_data["invoice_message_id"],
+            )
     except (TelegramBadRequest, NoContextError, KeyError):
         pass
     await delete_previous_message(dialog_manager=dialog_manager)
