@@ -16,22 +16,22 @@ payment_dialog = Dialog(
     Window(
         Const("⏳ Выберите на какой период хотите оформить подписку ⏳"),
         Button(
-            Const("💲 990 руб на 1 мес"),
+            Const(" 990 руб на 1 мес"),
             id="go_to_1_month_subscribe",
             on_click=getters_clickers.click_subscribe,
         ),
         Button(
-            Const("💲 2490 руб на 3 мес"),
+            Const(" 2490 руб на 3 мес"),
             id="go_to_3_month_subscribe",
             on_click=getters_clickers.click_subscribe,
         ),
         Button(
-            Const("💲 4990 руб на 6 мес"),
+            Const(" 4990 руб на 6 мес"),
             id="go_to_6_month_subscribe",
             on_click=getters_clickers.click_subscribe,
         ),
         Cancel(
-            Const("🔙 Назад ⬅️"),
+            Const("⬅️ Назад "),
             show_mode=ShowMode.DELETE_AND_SEND,
         ),
         state=PaymentStateGroup.choice_subscribe_length,
@@ -39,7 +39,7 @@ payment_dialog = Dialog(
     Window(
         Const("⬆️ ⬆️ ⬆️ Оплата ⬆️ ⬆️ ⬆️"),
         Back(
-            Const("🔙 Назад ⬅️"),
+            Const("⬅️ Назад "),
             on_click=getters_clickers.cancel_button,
             show_mode=ShowMode.DELETE_AND_SEND,
         ),

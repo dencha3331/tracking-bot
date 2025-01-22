@@ -2,17 +2,18 @@ from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import (
     Start,
     Url,
+    Back,
 )
 from aiogram_dialog.widgets.text import Format, Const
 from magic_filter import F
 
+from configs import settings
 from states import (
     MainStateGroup,
     PaymentStateGroup,
 )
 
 from dialogs.getters_clickers import main_getters_clickers as getters_clicks
-
 
 main_dialog = Dialog(
     Window(
@@ -21,7 +22,7 @@ main_dialog = Dialog(
             when=F["information_message"],
         ),
         Format(
-            "У Вас действующая подписка до {end_subscribe} ✅",
+            "Ваша подписка действует до: {end_subscribe} ✅",
             when=F["is_subscribe_user"],
         ),
         Format(
@@ -62,9 +63,22 @@ main_dialog = Dialog(
         ),
         Url(
             Const("👨‍💻 Администратор 👨‍💻"),
-            url=Format("https://t.me/Desca123"),
+            url=Format(settings.telegram.admin_link),
         ),
         state=MainStateGroup.main_dialog,
         getter=getters_clicks.main_menu_getter,
+    ),
+    Window(
+        Const(
+            text="ℹ️ Информация о канале:\n\n🌟 В этом приватном канале вы найдете:\n"
+            "- Уникальные знания об устройстве Вселенной\n"
+            "- Прогнозы будущих событий\n"
+            "- Исцеляющие практики\n"
+            "- Методики избавления от страхов\n"
+            "- Эксклюзивный контент\n\n"
+            "📌 Доступ предоставляется по подписке"
+        ),
+        Back(Const("⬅️ Назад ")),
+        state=MainStateGroup.chanel_information,
     ),
 )

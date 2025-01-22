@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 async def main_menu_getter(dialog_manager: "DialogManager", **kwargs) -> dict:
     db_user: "User" = dialog_manager.middleware_data.get("db_user")
-    await _send_information_message(dialog_manager=dialog_manager)
+    # await _send_information_message(dialog_manager=dialog_manager)
     return {
         "information_message": await _get_information_message(dialog_manager),
         "is_subscribe_user": (

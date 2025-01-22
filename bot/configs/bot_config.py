@@ -30,6 +30,7 @@ class TelegramConfig(BaseModel):
     token: str
     payment_token: str
     chanel_id: int
+    admin_link: str
 
 
 class PyroforkConfig(BaseModel):
