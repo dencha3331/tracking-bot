@@ -74,6 +74,8 @@ async def unban_user(message: "Message") -> None:
         await message.bot.unban_chat_member(
             chat_id=settings.telegram.chanel_id, user_id=message.from_user.id
         )
+    except TelegramBadRequest as e:
+        logger.error(e)
     except Exception as e:
         logger.exception(e)
 
