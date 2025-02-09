@@ -35,6 +35,9 @@ async def checkout(
     )
     if transaction:
         await pre_checkout_query.answer(ok=True)
+        logger.info(
+            f"success pre_checkout_query wait successful_payment  user id {pre_checkout_query.invoice_payload}"
+        )
     else:
         await pre_checkout_query.answer(
             ok=False,
@@ -45,6 +48,7 @@ async def checkout(
 @payments_router.message(F.content_type.in_(["successful_payment"]))
 async def got_payment(message: "Message", dialog_manager: "DialogManager") -> None:
     """Подтвержденная оплата(сообщение об успешной оплате от телеграмм)"""
+    logger.info(f"success transaction start user id {message.from_user.id}")
 
     transaction: "Transaction" = await save_payment(message, dialog_manager)
 
@@ -67,6 +71,7 @@ async def got_payment(message: "Message", dialog_manager: "DialogManager") -> No
         dialog_manager=dialog_manager,
         telegram_userid=message.from_user.id,
     )
+    logger.info(f"success transaction complete user id {message.from_user.id}")
 
 
 async def unban_user(message: "Message") -> None:
