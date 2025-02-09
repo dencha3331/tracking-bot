@@ -16,7 +16,9 @@ async def kick_user(
     tg_userid: int, chat_id: int, app: Union["Bot", "Client"], ban: bool = True
 ) -> None:
     until_date = (
-        None if ban else datetime.datetime.now() + datetime.timedelta(seconds=40)
+        datetime.datetime.now()
+        if ban
+        else datetime.datetime.now() + datetime.timedelta(seconds=40)
     )
     db_session: "AsyncSession" = await db_helper.session_getter()
     user: "User" = await crud.get_user(telegram_userid=tg_userid, db_session=db_session)
