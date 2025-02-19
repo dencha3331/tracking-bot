@@ -16,26 +16,26 @@ postgres:
 
 .PHONY: all
 all:
-	${DC} ${ENV} -f ${POSTGRES_FILE} -f ${APP_FILE} up --build -d
+	${DC} ${ENV} -f ${POSTGRES_FILE} -f ${BOT_FILE} up --build -d
 
 .PHONY: all-down
 all-down:
-	${DC} ${ENV} -f ${POSTGRES_FILE} -f ${APP_FILE} down
+	${DC} ${ENV} -f ${POSTGRES_FILE} -f ${BOT_FILE} down
 
-.PHONY: app-down
-app-down:
-	${DC} ${ENV} -f ${POSTGRES_FILE} down
+.PHONY: bot-down
+bot-down:
+	${DC} ${ENV} -f ${BOT_FILE} down
 
 .PHONY: postgres-down
 postgres-down:
 	${DC} ${ENV} -f ${POSTGRES_FILE} down
 
-.PHONY: app-shell
-app-shell:
+.PHONY: bot-shell
+bot-shell:
 	${EXEC} ${BOT_CONTAINER} bash
 
-.PHONY: app-logs
-app-logs:
+.PHONY: bot-logs
+bot-logs:
 	${LOGS} ${BOT_CONTAINER} -f
 
 .PHONY: test
